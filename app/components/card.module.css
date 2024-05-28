@@ -1,0 +1,40 @@
+.card {
+    aspect-ratio: 19 / 24;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border: 2px solid white;
+    overflow: hidden;
+}
+
+.background {
+    width: 100%;
+    height: 100%;
+    background-color: #222;
+    background-position: center;
+    background-size: cover;
+    transition: all 0.5s;
+}
+
+.background::before {
+    content: "";
+    display: none;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(52, 73, 94, 0.75);
+    z-index: -1;
+    position: absolute;
+    transition: all 0.5s;
+}
+
+.card:hover .background,
+.card:focus .background {
+    transform: scale(1.2);
+}
+
+.card:hover .background::before,
+.card:focus .background::before {
+    display: block;
+}
