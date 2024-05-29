@@ -4,6 +4,10 @@ import {
     addDoc,
     serverTimestamp,
     getDocs,
+    getDoc,
+    doc,
+    where,
+    query,
 } from "firebase/firestore";
 import { firestore, storage, db } from "../components/firebaseConfig";
 
@@ -50,9 +54,48 @@ const useDB = () => {
         }
     };
 
+    const getStoreDetails = async ({ storeId }) => {
+        try {
+            if (!storeId) throw Error("Missing storeId");
+            const docRef = doc(firestore, "stores", storeId);
+            const docSnapshot = await getDoc(docRef);
+
+            if (docSnapshot.exists()) {
+                const data = docSnapshot.data();
+                return { status: 200, body: data };
+            } else {
+                return { status: 404, body: "Room not found" };
+            }
+        } catch (e) {
+            return { status: 400, body: e };
+        }
+    };
+
+    const getStoreGroup = async ({ isGroup = true }) => {
+        try {
+            //Creates a reference to the stores collection
+            const storesRef = collection(firestore, "stores");
+
+            //Creates a query against the collection
+            const q = query(storesRef, where("isGroup", "==", isGroup));
+
+            const querySnapshot = await getDocs(q);
+            let storeArr = [];
+            querySnapshot.forEach((store) => {
+                storeArr.push(store);
+            });
+            return { status: 200, body: storeArr };
+        } catch (e) {
+            console.error("An error occurred when getting store group", e);
+            return { status: 400, body: e };
+        }
+    };
+
     return {
         addStore,
         getStores,
+        getStoreDetails,
+        getStoreGroup,
     };
 };
 

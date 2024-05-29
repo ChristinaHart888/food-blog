@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useDB from "../../hooks/useDB";
 
 export default function Form() {
@@ -8,8 +8,22 @@ export default function Form() {
     const [storeName, setStoreName] = useState("");
     const [groupId, setGroupId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [storeGroup, setStoreGroup] = useState([]);
 
-    const { addStore } = useDB();
+    const { addStore, getStoreGroup } = useDB();
+
+    useEffect(() => {
+        const initRoom = async () => {
+            const res = await getStoreGroup({ isGroup: true });
+            if (res.status === 200) {
+                console.log(res.body);
+                setStoreGroup(res.body);
+            } else {
+                console.error(res.body);
+            }
+        };
+        initRoom();
+    }, []);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -87,6 +101,14 @@ export default function Form() {
                     <input id="group" list="groups" defaultValue="No Group" />
                     <datalist id="groups">
                         <option value="0">No Group</option>
+                        {storeGroup.length > 0 &&
+                            storeGroup.map((store) => {
+                                return (
+                                    <option key={store.id} value={store.id}>
+                                        {store.data().storeName}
+                                    </option>
+                                );
+                            })}
                     </datalist>
                 </div>
             )}

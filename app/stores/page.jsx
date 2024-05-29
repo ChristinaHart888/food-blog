@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useDB from "../hooks/useDB";
+import Card from "../components/card";
 
 export default function Page() {
     const [storeList, setStoreList] = useState([]);
@@ -25,9 +26,11 @@ export default function Page() {
             <div
                 className="storeList"
                 style={{
-                    border: "1px solid white",
-                    margin: "1em",
-                    padding: "0.5em 1em",
+                    display: "grid",
+                    gap: "0.4em",
+                    gridTemplateColumns:
+                        "repeat(auto-fit, minmax(175px, 10em))",
+                    padding: "0.5em",
                 }}
             >
                 {storeList.length > 0 ? (
@@ -35,7 +38,14 @@ export default function Page() {
                         const storeData = store.data();
                         console.log(storeData);
                         const storeName = storeData.storeName;
-                        return <div key={index}>{storeName}</div>;
+                        return (
+                            <Card
+                                title={storeName}
+                                key={index}
+                                background={storeData.img}
+                                link={`/stores/${store.id}`}
+                            ></Card>
+                        );
                     })
                 ) : (
                     <span>Loading...</span>
