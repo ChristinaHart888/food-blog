@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import useDB from "../../hooks/useDB";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }) {
     const { getStoreDetails } = useDB();
@@ -16,7 +17,7 @@ export default function Page({ params }) {
             setStoreDetails(res.body);
         } else if (res.status === 404) {
             alert("Room not found");
-            window.location.href = "/";
+            router.push("/");
         } else {
             console.error(res.body);
         }

@@ -10,8 +10,24 @@ import {
     query,
 } from "firebase/firestore";
 import { firestore, storage, db } from "../components/firebaseConfig";
+import bcrypt from "bcryptjs-react";
 
 const useDB = () => {
+    const SALT_ROUNDS = 10;
+    const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    const isValidEmail = (email) => {
+        return EMAIL_REGEX.test(email);
+    };
+
+    const isValidUser = async (email) => {
+        const userRef = collection(firestore, "users");
+        const q = query(userRef, where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        console.log("queruSnapshot", querySnapshot);
+        return querySnapshot.size > 0;
+    };
+
     const addStore = async ({
         storeName,
         isGroup,
@@ -19,7 +35,7 @@ const useDB = () => {
         groupId = null,
     }) => {
         try {
-            if (!storeName || !isGroup) throw Error("Missing Store Info");
+            if (!storeName || !isGroup) throw "Missing Store Info";
             let url = null;
             if (file) {
                 console.log("File name", file.name);
@@ -56,7 +72,7 @@ const useDB = () => {
 
     const getStoreDetails = async ({ storeId }) => {
         try {
-            if (!storeId) throw Error("Missing storeId");
+            if (!storeId) throw "Missing storeId";
             const docRef = doc(firestore, "stores", storeId);
             const docSnapshot = await getDoc(docRef);
 
@@ -91,11 +107,79 @@ const useDB = () => {
         }
     };
 
+    const addUser = async ({ email, password, username, profile = null }) => {
+        try {
+            if (!isValidEmail) throw "Invalid Email";
+
+            const userAlreadyExists = await isValidUser(email);
+            if (userAlreadyExists) throw "User already exists";
+
+            const newPass = await bcrypt.hash(password, SALT_ROUNDS);
+            if (newPass) {
+                const data = {
+                    email,
+                    password: newPass,
+                    username,
+                    profile,
+                };
+                const res = await addDoc(collection(firestore, "users"), data);
+                if (res.id) {
+                    return { status: 200, body: res.id };
+                } else {
+                    throw "Something went wrong when add user to database";
+                }
+            }
+        } catch (e) {
+            console.error("An error occurred when adding user", e);
+            return { status: 400, body: e };
+        }
+    };
+
+    const loginUser = async ({ email, password }) => {
+        try {
+            if (!isValidEmail) throw "Email provided is not valid";
+            const userRef = collection(firestore, "users");
+            const q = query(userRef, where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.size < 1)
+                return {
+                    status: 404,
+                    body: "User with email does not exist",
+                };
+            let res;
+            await Promise.all(
+                querySnapshot.docs.map(async (doc) => {
+                    const userData = doc?.data();
+                    const passwordHash = userData.password;
+                    const isCorrectPassword = await bcrypt.compare(
+                        password,
+                        passwordHash
+                    );
+                    if (!isCorrectPassword) {
+                        res = { status: 401, body: "Incorrect Password" };
+                    } else {
+                        res = {
+                            status: 200,
+                            body: { ...userData, userId: doc.id },
+                        };
+                    }
+                })
+            );
+            return res;
+        } catch (e) {
+            return { status: 400, body: e };
+        }
+    };
+
+    const addReview = async ({ userId, storeId, rating, comment }) => {};
+
     return {
         addStore,
         getStores,
         getStoreDetails,
         getStoreGroup,
+        addUser,
+        loginUser,
     };
 };
 
