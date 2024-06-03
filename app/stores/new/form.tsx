@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
 import useDB from "../../hooks/useDB";
@@ -8,7 +9,8 @@ export default function Form() {
     const [storeName, setStoreName] = useState("");
     const [groupId, setGroupId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [storeGroup, setStoreGroup] = useState([]);
+    //TODO: Set store interface
+    const [storeGroup, setStoreGroup] = useState<any[]>([]);
 
     const { addStore, getStoreGroup } = useDB();
 
@@ -25,7 +27,7 @@ export default function Form() {
         initRoom();
     }, []);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = (e: any) => {
         setFile(e.target.files[0]);
     };
 
@@ -37,14 +39,13 @@ export default function Form() {
             isGroup,
             file,
             groupId,
-            file,
         });
-        if (result.status === 200) {
+        if (result?.status === 200) {
             console.log("Done", result.body);
             setIsLoading(false);
             alert("New store added");
         } else {
-            console.error(result.body);
+            console.error(result?.body);
         }
     };
 

@@ -1,10 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
 import useDB from "../hooks/useDB";
 import Card from "../components/card";
 
 export default function Page() {
-    const [storeList, setStoreList] = useState([]);
+    //TODO: Add interface for stores
+    const [storeList, setStoreList] = useState<any[]>([]);
     const { getStores } = useDB();
 
     const initRoom = async () => {

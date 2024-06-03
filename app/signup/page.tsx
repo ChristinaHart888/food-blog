@@ -15,7 +15,7 @@ export default function Signup() {
     const [errorMessage, setErrorMessage] = useState("");
 
     const { addUser } = useDB();
-    const { login, user } = useAuth();
+    const { login, user } = useAuth() || {};
     const router = useRouter();
 
     useEffect(() => {
@@ -33,10 +33,11 @@ export default function Signup() {
             });
             if (result.status === 200) {
                 //localStorage.setItem("userId", result.userId);
-                login({
-                    userId: result.userId,
-                    username: username,
-                });
+                login &&
+                    login({
+                        userId: result.body.userId,
+                        username: username,
+                    });
                 router.push("./");
             } else {
                 console.log("result.body", result.body);

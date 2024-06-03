@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -9,13 +10,14 @@ import { useAuth } from "../context/authcontext";
 import { useRouter } from "next/navigation";
 
 export default function Signup() {
-    const [isDisabled, setIsDisabled] = useState();
-    const [errorMessage, setErrorMessage] = useState();
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [isDisabled, setIsDisabled] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
 
-    const { loginUser, loginGuest } = useDB();
-    const { user, login } = useAuth();
+    const { loginUser } = useDB();
+    const auth = useAuth();
+    const { user, login } = auth || {};
 
     const router = useRouter();
 
@@ -32,10 +34,11 @@ export default function Signup() {
             if (result.status === 200) {
                 const userDetails = result.body;
                 console.log("userDetails", userDetails);
-                login({
-                    username: userDetails.username,
-                    userId: userDetails.userId,
-                });
+                login &&
+                    login({
+                        username: userDetails.username,
+                        userId: userDetails.userId,
+                    });
                 router.push("./");
             } else {
                 console.log("result", result);
@@ -46,16 +49,16 @@ export default function Signup() {
             setErrorMessage("Please enter Email and Password");
         }
     };
-    const guestButtonHandler = async () => {
-        let result = await loginGuest();
-        if (result?.status === "success") {
-            localStorage.setItem("userId", result.userId);
-            localStorage.setItem("username", result.username);
-            router.push("./profile");
-        } else {
-            setErrorMessage(result?.message);
-        }
-    };
+    // const guestButtonHandler = async () => {
+    //     let result = await loginGuest();
+    //     if (result?.status === "success") {
+    //         localStorage.setItem("userId", result.userId);
+    //         localStorage.setItem("username", result.username);
+    //         router.push("./profile");
+    //     } else {
+    //         setErrorMessage(result?.message);
+    //     }
+    // };
 
     return (
         <main className="">
@@ -90,14 +93,14 @@ export default function Signup() {
                     >
                         Log in with Google
                     </button> */}
-                    <button
+                    {/* <button
                         onClick={guestButtonHandler}
                         className={styles.formBtn}
                         id={styles.guestBtn}
                         disabled={isDisabled}
                     >
                         Continue as guest
-                    </button>
+                    </button> */}
                     <small>
                         New to Karaoke-v1?{" "}
                         <Link href="./signup" className={styles.signUpLink}>

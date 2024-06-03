@@ -9,18 +9,25 @@ import {
     where,
     query,
 } from "firebase/firestore";
-import { firestore, storage, db } from "../components/firebaseConfig";
+import { firestore, storage } from "../components/firebaseConfig";
 import bcrypt from "bcryptjs-react";
+import {
+    AddStoreParams,
+    AddUserParams,
+    LoginUserParams,
+    ResponseObject,
+} from "../types/dbTypes";
+//import jwt from 'jsonwebtoken'
 
 const useDB = () => {
     const SALT_ROUNDS = 10;
     const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    const isValidEmail = (email) => {
+    const isValidEmail = (email: string) => {
         return EMAIL_REGEX.test(email);
     };
 
-    const isValidUser = async (email) => {
+    const isValidUser = async (email: string) => {
         const userRef = collection(firestore, "users");
         const q = query(userRef, where("email", "==", email));
         const querySnapshot = await getDocs(q);
@@ -33,7 +40,7 @@ const useDB = () => {
         isGroup,
         file = null,
         groupId = null,
-    }) => {
+    }: AddStoreParams) => {
         try {
             if (!storeName || !isGroup) throw "Missing Store Info";
             let url = null;
@@ -59,7 +66,7 @@ const useDB = () => {
         }
     };
 
-    const getStores = async () => {
+    const getStores = async (): Promise<ResponseObject> => {
         try {
             const querySnapshot = await getDocs(
                 collection(firestore, "stores")
@@ -70,7 +77,11 @@ const useDB = () => {
         }
     };
 
-    const getStoreDetails = async ({ storeId }) => {
+    const getStoreDetails = async ({
+        storeId,
+    }: {
+        storeId: string;
+    }): Promise<ResponseObject> => {
         try {
             if (!storeId) throw "Missing storeId";
             const docRef = doc(firestore, "stores", storeId);
@@ -87,7 +98,9 @@ const useDB = () => {
         }
     };
 
-    const getStoreGroup = async ({ isGroup = true }) => {
+    const getStoreGroup = async ({
+        isGroup = true,
+    }): Promise<ResponseObject> => {
         try {
             //Creates a reference to the stores collection
             const storesRef = collection(firestore, "stores");
@@ -96,7 +109,7 @@ const useDB = () => {
             const q = query(storesRef, where("isGroup", "==", isGroup));
 
             const querySnapshot = await getDocs(q);
-            let storeArr = [];
+            let storeArr: Object[] = [];
             querySnapshot.forEach((store) => {
                 storeArr.push(store);
             });
@@ -107,7 +120,12 @@ const useDB = () => {
         }
     };
 
-    const addUser = async ({ email, password, username, profile = null }) => {
+    const addUser = async ({
+        email,
+        password,
+        username,
+        profile = null,
+    }: AddUserParams): Promise<ResponseObject> => {
         try {
             if (!isValidEmail) throw "Invalid Email";
 
@@ -128,6 +146,8 @@ const useDB = () => {
                 } else {
                     throw "Something went wrong when add user to database";
                 }
+            } else {
+                throw "Something went wrong with the hashing of password";
             }
         } catch (e) {
             console.error("An error occurred when adding user", e);
@@ -135,7 +155,10 @@ const useDB = () => {
         }
     };
 
-    const loginUser = async ({ email, password }) => {
+    const loginUser = async ({
+        email,
+        password,
+    }: LoginUserParams): Promise<ResponseObject> => {
         try {
             if (!isValidEmail) throw "Email provided is not valid";
             const userRef = collection(firestore, "users");
@@ -146,7 +169,10 @@ const useDB = () => {
                     status: 404,
                     body: "User with email does not exist",
                 };
-            let res;
+            let res: ResponseObject = {
+                status: 400,
+                body: "Something went wrong when checking your password",
+            };
             await Promise.all(
                 querySnapshot.docs.map(async (doc) => {
                     const userData = doc?.data();
@@ -171,7 +197,7 @@ const useDB = () => {
         }
     };
 
-    const addReview = async ({ userId, storeId, rating, comment }) => {};
+    //const addReview = async ({ userId, storeId, rating, comment }) => {};
 
     return {
         addStore,
