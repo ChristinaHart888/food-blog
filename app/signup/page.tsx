@@ -4,8 +4,7 @@ import Link from "next/link";
 import Popup from "../components/popup";
 import styles from "./signin.module.css";
 import useDB from "../hooks/useDB";
-import TextInput from "../components/TextInput";
-import { useAuth } from "../context/authcontext";
+import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function Signup() {

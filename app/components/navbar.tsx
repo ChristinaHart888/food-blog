@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { useAuth } from "../context/authcontext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
-    const { user, logout } = useAuth();
+    const { user, logout } = useAuth() || {};
 
     return (
         <nav
