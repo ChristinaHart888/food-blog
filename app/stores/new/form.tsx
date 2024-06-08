@@ -8,9 +8,10 @@ export default function Form() {
     const [file, setFile] = useState(null);
     const [storeName, setStoreName] = useState("");
     const [groupId, setGroupId] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    //TODO: Fix the probelm with the button not being disabled when isLoading is true
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     //TODO: Set store interface
-    const [storeGroup, setStoreGroup] = useState<any[]>([]);
+    const [storeGroup, setStoreGroup] = useState<any>([]);
 
     const { addStore, getStoreGroup } = useDB();
 
@@ -103,7 +104,7 @@ export default function Form() {
                     <datalist id="groups">
                         <option value="0">No Group</option>
                         {storeGroup.length > 0 &&
-                            storeGroup.map((store) => {
+                            storeGroup.map((store: any) => {
                                 return (
                                     <option key={store.id} value={store.id}>
                                         {store.data().storeName}
@@ -130,7 +131,13 @@ export default function Form() {
             {isLoading ? (
                 <span>Loading...</span>
             ) : (
-                <button type="submit">Create Store</button>
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    style={{ cursor: "pointer" }}
+                >
+                    Create Store
+                </button>
             )}
         </form>
     );

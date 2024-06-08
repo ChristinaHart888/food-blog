@@ -3,10 +3,38 @@ import React from "react";
 import Link from "next/link";
 import style from "./card.module.css";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-export default function Card({ title, background, link }) {
+interface BaseCardParams {
+    title: string;
+    background?: string;
+}
+
+interface LinkCardParams extends BaseCardParams {
+    link: string;
+    onClick?: never;
+}
+
+interface OnClickCardParams extends BaseCardParams {
+    link?: never;
+    onClick: () => void;
+}
+
+type CardParams = LinkCardParams | OnClickCardParams;
+
+export default function Card({ title, background, link, onClick }: CardParams) {
+    const router = useRouter();
     return (
-        <Link href={link} className={style.card}>
+        <div
+            className={style.card}
+            onClick={
+                onClick
+                    ? onClick
+                    : () => {
+                          router.push(link);
+                      }
+            }
+        >
             <div
                 className={style.background}
                 style={{
@@ -28,6 +56,6 @@ export default function Card({ title, background, link }) {
                     </span>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }

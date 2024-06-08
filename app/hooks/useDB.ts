@@ -12,6 +12,7 @@ import {
 import { firestore, storage } from "../components/firebaseConfig";
 import bcrypt from "bcryptjs-react";
 import {
+    AddReviewParams,
     AddStoreParams,
     AddUserParams,
     LoginUserParams,
@@ -62,7 +63,7 @@ const useDB = () => {
                 return { status: 200, body: newStore.id };
             }
         } catch (e) {
-            return { status: 400, body: e };
+            return { status: 400, body: e + "" };
         }
     };
 
@@ -73,7 +74,7 @@ const useDB = () => {
             );
             return { status: 200, body: querySnapshot.docs };
         } catch (e) {
-            return { status: 400, body: e };
+            return { status: 400, body: e + "" };
         }
     };
 
@@ -94,7 +95,7 @@ const useDB = () => {
                 return { status: 404, body: "Room not found" };
             }
         } catch (e) {
-            return { status: 400, body: e };
+            return { status: 400, body: e + "" };
         }
     };
 
@@ -109,14 +110,11 @@ const useDB = () => {
             const q = query(storesRef, where("isGroup", "==", isGroup));
 
             const querySnapshot = await getDocs(q);
-            let storeArr: Object[] = [];
-            querySnapshot.forEach((store) => {
-                storeArr.push(store);
-            });
-            return { status: 200, body: storeArr };
+            let stores = querySnapshot.docs;
+            return { status: 200, body: stores };
         } catch (e) {
             console.error("An error occurred when getting store group", e);
-            return { status: 400, body: e };
+            return { status: 400, body: e + "" };
         }
     };
 
@@ -151,7 +149,7 @@ const useDB = () => {
             }
         } catch (e) {
             console.error("An error occurred when adding user", e);
-            return { status: 400, body: e };
+            return { status: 400, body: e + "" };
         }
     };
 
@@ -193,11 +191,11 @@ const useDB = () => {
             );
             return res;
         } catch (e) {
-            return { status: 400, body: e };
+            return { status: 400, body: e + "" };
         }
     };
 
-    //const addReview = async ({ userId, storeId, rating, comment }) => {};
+    const addReviews = async ({ reviewsArray }: AddReviewParams) => {};
 
     return {
         addStore,

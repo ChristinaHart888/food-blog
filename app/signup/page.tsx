@@ -30,7 +30,7 @@ export default function Signup() {
                 username: username,
                 password: password,
             });
-            if (result.status === 200) {
+            if (result.status === 200 && typeof result.body !== "string") {
                 //localStorage.setItem("userId", result.userId);
                 login &&
                     login({
