@@ -19,6 +19,20 @@ export interface LoginUserParams {
     password: string;
 }
 
+export interface AddReviewParams {
+    reviewsArray: Review[];
+}
+
+export interface AddItemParams {
+    storeId: string;
+    itemName: string;
+    img?: File;
+}
+
+export interface GetItemsByStoreParams {
+    storeId: string;
+}
+
 interface BaseReview {
     reviewId: string;
     userId: string;
@@ -35,20 +49,50 @@ interface ItemReview extends BaseReview {
     itemId: string;
 }
 
+export type Tag = {
+    tagId: string;
+    tagName: string;
+};
+
 export type Review = StoreReview | ItemReview;
 
 export type Item = {
     itemId: string;
     createdAt?: any;
+    createdBy?: string;
     storeId: string;
-    img?: string;
+    img?: File;
+    itemName: string;
+    tags?: Tag[];
 };
 
-export interface AddReviewParams {
-    reviewsArray: Review[];
-}
+export type Store = {
+    storeId: string;
+    storeName: string;
+    isGroup: boolean;
+    groupId?: string;
+    img?: string;
+    createdAt?: string;
+    createdBy?: string;
+    tags?: Tag[];
+};
 
-export type ResponseObject = {
+export interface ResponseObject {
     status: number;
     body: DocumentData | string;
-};
+}
+
+export interface StoreResponseObject extends ResponseObject {
+    body: Store | string;
+}
+
+export interface StoreListResponseObject extends ResponseObject {
+    body: Store[] | string;
+}
+export interface AddItemResponse extends ResponseObject {
+    body: Item | string;
+}
+
+export interface ItemListResponse extends ResponseObject {
+    body: Item[] | string;
+}

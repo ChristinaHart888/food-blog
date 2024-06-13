@@ -12,11 +12,19 @@ import {
 import { firestore, storage } from "../components/firebaseConfig";
 import bcrypt from "bcryptjs-react";
 import {
+    AddItemParams,
+    AddItemResponse,
     AddReviewParams,
     AddStoreParams,
     AddUserParams,
+    GetItemsByStoreParams,
+    Item,
+    ItemListResponse,
     LoginUserParams,
     ResponseObject,
+    Store,
+    StoreListResponseObject,
+    StoreResponseObject,
 } from "../types/dbTypes";
 //import jwt from 'jsonwebtoken'
 
@@ -34,6 +42,18 @@ const useDB = () => {
         const querySnapshot = await getDocs(q);
         console.log("queruSnapshot", querySnapshot);
         return querySnapshot.size > 0;
+    };
+
+    const uploadImage = async (file: File | undefined): Promise<string> => {
+        if (file) {
+            console.log("File name", file.name);
+            const storageRef = ref(storage, `images/${file.name}`);
+            await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(storageRef);
+            return url;
+        } else {
+            return "";
+        }
     };
 
     const addStore = async ({
@@ -82,7 +102,7 @@ const useDB = () => {
         storeId,
     }: {
         storeId: string;
-    }): Promise<ResponseObject> => {
+    }): Promise<StoreResponseObject> => {
         try {
             if (!storeId) throw "Missing storeId";
             const docRef = doc(firestore, "stores", storeId);
@@ -90,7 +110,16 @@ const useDB = () => {
 
             if (docSnapshot.exists()) {
                 const data = docSnapshot.data();
-                return { status: 200, body: data };
+                const store: Store = {
+                    storeId: data.storeId,
+                    storeName: data.storeName,
+                    isGroup: data.isGroup,
+                    img: data.img,
+                    createdAt: data.createdAt ? data.createdAt : undefined,
+                    createdBy: data.createdBy ? data.createdBy : undefined,
+                    tags: data.tagss ? data.tags : [],
+                };
+                return { status: 200, body: store };
             } else {
                 return { status: 404, body: "Room not found" };
             }
@@ -101,7 +130,7 @@ const useDB = () => {
 
     const getStoreGroup = async ({
         isGroup = true,
-    }): Promise<ResponseObject> => {
+    }): Promise<StoreListResponseObject> => {
         try {
             //Creates a reference to the stores collection
             const storesRef = collection(firestore, "stores");
@@ -111,7 +140,20 @@ const useDB = () => {
 
             const querySnapshot = await getDocs(q);
             let stores = querySnapshot.docs;
-            return { status: 200, body: stores };
+            let storeList: Store[] = [];
+            stores.forEach((store) => {
+                let data = store.data();
+                storeList.push({
+                    storeId: store.id,
+                    storeName: data.storeName,
+                    isGroup: data.isGroup,
+                    img: data.img,
+                    createdAt: data.createdAt ? data.createdAt : undefined,
+                    createdBy: data.createdBy ? data.createdBy : undefined,
+                    tags: data.tagss ? data.tags : [],
+                });
+            });
+            return { status: 200, body: storeList };
         } catch (e) {
             console.error("An error occurred when getting store group", e);
             return { status: 400, body: e + "" };
@@ -195,6 +237,72 @@ const useDB = () => {
         }
     };
 
+    const addItem = async ({
+        itemName,
+        storeId,
+        img,
+    }: AddItemParams): Promise<AddItemResponse> => {
+        try {
+            const url = await uploadImage(img);
+            const data = {
+                itemName,
+                storeId,
+                img: url,
+                createdAt: serverTimestamp(),
+            };
+            console.log("data", data);
+            const res = await addDoc(collection(firestore, "items"), data);
+            if (res.id) {
+                const data = res;
+                console.log(data);
+                const body: Item = {
+                    itemId: res.id,
+                    createdAt: "sometime",
+                    itemName: itemName,
+                    storeId,
+                };
+                return { status: 200, body: body };
+            } else {
+                throw "AN Error occured when adding item";
+            }
+        } catch (e) {
+            console.error(e);
+            return { status: 400, body: e + "" };
+        }
+    };
+
+    const getItemsByStore = async ({
+        storeId,
+    }: GetItemsByStoreParams): Promise<ItemListResponse> => {
+        try {
+            if (!storeId) throw "Invalid StoreID";
+            //Creates a reference to the items collection
+            const itemsRef = collection(firestore, "items");
+
+            //Creates a query against the collection
+            const q = query(itemsRef, where("storeId", "==", storeId));
+
+            const querySnapshot = await getDocs(q);
+            let items = querySnapshot.docs;
+            let itemList: Item[] = [];
+            items.forEach((item) => {
+                let data = item.data();
+                itemList.push({
+                    itemId: item.id,
+                    itemName: data.itemName,
+                    img: data.img,
+                    storeId: data.storeId,
+                    createdAt: data.createdAt ? data.createdAt : undefined,
+                    createdBy: data.createdBy ? data.createdBy : undefined,
+                    tags: data.tagss ? data.tags : [],
+                });
+            });
+            return { status: 200, body: itemList };
+        } catch (e) {
+            return { status: 400, body: e + "" };
+        }
+    };
+
     const addReviews = async ({ reviewsArray }: AddReviewParams) => {};
 
     return {
@@ -204,6 +312,8 @@ const useDB = () => {
         getStoreGroup,
         addUser,
         loginUser,
+        addItem,
+        getItemsByStore,
     };
 };
 

@@ -17,7 +17,11 @@ const Popup = ({
     }, [errorMessage]);
 
     return (
-        <div className={errorMessage ? styles.popUpShow : styles.popUpHide}>
+        <div
+            className={
+                errorMessage.length > 0 ? styles.popUpShow : styles.popUpHide
+            }
+        >
             <div
                 className="heading"
                 style={{ display: "flex", justifyContent: "space-around" }}

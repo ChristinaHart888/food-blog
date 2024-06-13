@@ -16,8 +16,8 @@ interface NumberInputParams extends BaseInputParams {
 
 interface TextInputParams extends BaseInputParams {
     type: "text";
-    min: never;
-    max: never;
+    min?: never;
+    max?: never;
 }
 
 type InputParams = NumberInputParams | TextInputParams;

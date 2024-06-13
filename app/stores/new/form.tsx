@@ -2,6 +2,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useDB from "../../hooks/useDB";
+import { Store } from "@/app/types/dbTypes";
 
 export default function Form() {
     const [isGroup, setIsGroup] = useState(false);
@@ -11,14 +12,14 @@ export default function Form() {
     //TODO: Fix the probelm with the button not being disabled when isLoading is true
     const [isLoading, setIsLoading] = useState<boolean>(false);
     //TODO: Set store interface
-    const [storeGroup, setStoreGroup] = useState<any>([]);
+    const [storeGroup, setStoreGroup] = useState<Store[]>([]);
 
     const { addStore, getStoreGroup } = useDB();
 
     useEffect(() => {
         const initRoom = async () => {
             const res = await getStoreGroup({ isGroup: true });
-            if (res.status === 200) {
+            if (res.status === 200 && typeof res.body !== "string") {
                 console.log(res.body);
                 setStoreGroup(res.body);
             } else {

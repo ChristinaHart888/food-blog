@@ -14,6 +14,7 @@ export default function Home() {
                     gridTemplateColumns:
                         "repeat(auto-fit, minmax(175px, 10em))",
                     padding: "0.5em",
+                    justifyContent: "center",
                 }}
             >
                 <Card
