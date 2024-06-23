@@ -20,7 +20,23 @@ interface TextInputParams extends BaseInputParams {
     max?: never;
 }
 
-type InputParams = NumberInputParams | TextInputParams;
+interface EmailInputParams extends BaseInputParams {
+    type: "email";
+    min?: never;
+    max?: never;
+}
+
+interface PasswordInputParams extends BaseInputParams {
+    type: "password";
+    min?: never;
+    max?: never;
+}
+
+type InputParams =
+    | NumberInputParams
+    | TextInputParams
+    | EmailInputParams
+    | PasswordInputParams;
 
 export default function TextInput({
     label,

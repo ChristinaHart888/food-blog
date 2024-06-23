@@ -25,6 +25,7 @@ import {
     Store,
     StoreListResponseObject,
     StoreResponseObject,
+    UserResponseObject,
 } from "../types/dbTypes";
 //import jwt from 'jsonwebtoken'
 
@@ -198,7 +199,7 @@ const useDB = () => {
     const loginUser = async ({
         email,
         password,
-    }: LoginUserParams): Promise<ResponseObject> => {
+    }: LoginUserParams): Promise<UserResponseObject> => {
         try {
             if (!isValidEmail) throw "Email provided is not valid";
             const userRef = collection(firestore, "users");
@@ -209,7 +210,7 @@ const useDB = () => {
                     status: 404,
                     body: "User with email does not exist",
                 };
-            let res: ResponseObject = {
+            let res: UserResponseObject = {
                 status: 400,
                 body: "Something went wrong when checking your password",
             };
@@ -226,7 +227,10 @@ const useDB = () => {
                     } else {
                         res = {
                             status: 200,
-                            body: { ...userData, userId: doc.id },
+                            body: {
+                                userId: doc.id,
+                                username: userData.username,
+                            },
                         };
                     }
                 })

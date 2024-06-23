@@ -77,6 +77,15 @@ export type Store = {
     tags?: Tag[];
 };
 
+export type User = {
+    userId: string;
+    username: string;
+    role?: string; //TODO: Create role type
+    email?: string;
+    password?: string;
+    img?: string;
+};
+
 export interface ResponseObject {
     status: number;
     body: DocumentData | string;
@@ -88,6 +97,10 @@ export interface StoreResponseObject extends ResponseObject {
 
 export interface StoreListResponseObject extends ResponseObject {
     body: Store[] | string;
+}
+
+export interface UserResponseObject extends ResponseObject {
+    body: User | string;
 }
 export interface AddItemResponse extends ResponseObject {
     body: Item | string;
