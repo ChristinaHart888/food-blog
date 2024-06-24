@@ -31,7 +31,7 @@ export default function Signup() {
         setIsDisabled(true);
         if (email && password) {
             let result = await loginUser({ email: email, password: password });
-            if (result.status === 200) {
+            if (result.status === 200 && typeof result.body !== "string") {
                 const userDetails = result.body;
                 console.log("userDetails", userDetails);
                 login &&
@@ -68,11 +68,13 @@ export default function Signup() {
                     <form>
                         <TextInput
                             onChange={setEmail}
+                            value={email}
                             type="email"
                             label={"Email"}
                         ></TextInput>
                         <TextInput
                             onChange={setPassword}
+                            value={password}
                             type="password"
                             label={"Password"}
                         ></TextInput>

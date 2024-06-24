@@ -4,6 +4,7 @@ import styles from "./textInput.module.css";
 interface BaseInputParams {
     label: string;
     onChange: (e: any) => void;
+    value: string;
     required?: boolean;
     style?: CSSProperties;
 }
@@ -46,6 +47,7 @@ export default function TextInput({
     max,
     min,
     style,
+    value,
 }: InputParams) {
     return (
         <div className={styles.inputContainer}>
@@ -57,6 +59,7 @@ export default function TextInput({
                 onChange={(e) => onChange(e.target.value)}
                 style={style}
                 required={required}
+                value={value}
                 max={max && max}
                 min={min && min}
             ></input>

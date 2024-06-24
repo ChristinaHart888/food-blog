@@ -88,12 +88,23 @@ const useDB = () => {
         }
     };
 
-    const getStores = async (): Promise<ResponseObject> => {
+    const getStores = async (): Promise<StoreListResponseObject> => {
         try {
             const querySnapshot = await getDocs(
                 collection(firestore, "stores")
             );
-            return { status: 200, body: querySnapshot.docs };
+            let storeList: Store[] = [];
+            querySnapshot.docs.forEach((store) => {
+                const data = store.data();
+                storeList.push({
+                    storeId: store.id,
+                    storeName: data.storeName,
+                    img: data.img,
+                    isGroup: data.isGroup,
+                    createdAt: data.createdAt,
+                });
+            });
+            return { status: 200, body: storeList };
         } catch (e) {
             return { status: 400, body: e + "" };
         }

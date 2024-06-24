@@ -3,17 +3,20 @@
 import React, { useEffect, useState } from "react";
 import useDB from "../hooks/useDB";
 import Card from "../components/card";
+import { Store } from "../types/dbTypes";
 
 export default function Page() {
     //TODO: Add interface for stores
-    const [storeList, setStoreList] = useState<any[]>([]);
+    const [storeList, setStoreList] = useState<Store[]>([]);
     const { getStores } = useDB();
 
     const initRoom = async () => {
         const res = await getStores();
-        if (res.status === 200) {
+        if (res.status === 200 && typeof res.body !== "string") {
             console.log(res.body);
             setStoreList(res.body);
+        } else {
+            console.error(res.body);
         }
     };
 
@@ -33,19 +36,18 @@ export default function Page() {
                     gridTemplateColumns:
                         "repeat(auto-fit, minmax(175px, 10em))",
                     padding: "0.5em",
+                    justifyContent: "center",
                 }}
             >
                 {storeList.length > 0 ? (
                     storeList.map((store, index) => {
-                        const storeData = store.data();
-                        console.log(storeData);
-                        const storeName = storeData.storeName;
+                        console.log(store);
                         return (
                             <Card
-                                title={storeName}
+                                title={store.storeName}
                                 key={index}
-                                background={storeData.img}
-                                link={`/stores/${store.id}`}
+                                background={store.img}
+                                link={`/stores/${store.storeId}`}
                             ></Card>
                         );
                     })

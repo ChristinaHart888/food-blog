@@ -5,6 +5,7 @@
     justify-content: center;
     border: 2px solid white;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .background {
