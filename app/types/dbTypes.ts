@@ -20,7 +20,7 @@ export interface LoginUserParams {
 }
 
 export interface AddReviewParams {
-    reviewsArray: Review[];
+    reviewsArray: NewReview[];
 }
 
 export interface AddItemParams {
@@ -47,6 +47,12 @@ interface StoreReview extends BaseReview {
 
 interface ItemReview extends BaseReview {
     itemId: string;
+}
+
+export interface NewReview {
+    itemId: string;
+    rating: number;
+    comments: string;
 }
 
 export type Tag = {

@@ -4,7 +4,7 @@ import Card from "@/app/components/card";
 import Popup from "@/app/components/popup";
 import TextInput from "@/app/components/TextInput";
 import useDB from "@/app/hooks/useDB";
-import { Item, Store } from "@/app/types/dbTypes";
+import { Item, NewReview, Review, Store } from "@/app/types/dbTypes";
 import { DocumentData } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
@@ -19,8 +19,11 @@ export default function Form() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [newReviewList, setNewReviewList] = useState<NewReview[]>([]);
+    const [isUploadingReviews, setIsUploadingReviews] =
+        useState<boolean>(false);
 
-    const { getStores, addItem, getItemsByStore } = useDB();
+    const { getStores, addItem, getItemsByStore, addReviews } = useDB();
 
     useEffect(() => {
         const initRoom = async () => {
@@ -36,6 +39,20 @@ export default function Form() {
         initRoom();
     }, []);
 
+    const addReviewsHandler = async () => {
+        console.log("Adding reviews");
+        console.log(newReviewList);
+        const res = await addReviews({ reviewsArray: newReviewList });
+        setIsUploadingReviews(false);
+        if (res.status === 200) {
+            console.log("Success");
+            window.location.reload();
+        } else {
+            console.error(res.body);
+            setErrorMessage("An error occured");
+        }
+    };
+
     return (
         <div
             className="formDiv"
@@ -49,7 +66,6 @@ export default function Form() {
             }}
         >
             <form
-                action=""
                 style={{
                     height: "100%",
                     width: "100%",
@@ -75,6 +91,11 @@ export default function Form() {
                     <ReviewPage
                         selectedItems={selectedItems}
                         setCurrentPage={setCurrentPage}
+                        newReviewList={newReviewList}
+                        setNewReviewList={setNewReviewList}
+                        isUploadingReviews={isUploadingReviews}
+                        setIsUploadingReviews={setIsUploadingReviews}
+                        addReviewsHandler={addReviewsHandler}
                     ></ReviewPage>
                 )}
             </form>

@@ -1,16 +1,35 @@
-import { Item } from "@/app/types/dbTypes";
-import React from "react";
+import { Item, NewReview } from "@/app/types/dbTypes";
+import React, { useEffect, useState } from "react";
 import ItemReviewDropdown from "./itemReviewDropdown";
 
 interface ReviewPageParams {
     selectedItems: Item[];
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+    newReviewList: NewReview[];
+    setNewReviewList: React.Dispatch<React.SetStateAction<NewReview[]>>;
+    isUploadingReviews: boolean;
+    setIsUploadingReviews: React.Dispatch<React.SetStateAction<boolean>>;
+    addReviewsHandler: () => Promise<void>;
 }
 
 export default function ReviewPage({
     selectedItems,
     setCurrentPage,
+    newReviewList,
+    setNewReviewList,
+    isUploadingReviews,
+    setIsUploadingReviews,
+    addReviewsHandler,
 }: ReviewPageParams) {
+    useEffect(() => {
+        setNewReviewList(
+            selectedItems.map((item) => ({
+                itemId: item.itemId,
+                rating: 5,
+                comments: "",
+            }))
+        );
+    }, []);
     return (
         <div
             style={{
@@ -28,6 +47,8 @@ export default function ReviewPage({
                             <ItemReviewDropdown
                                 key={item.itemId}
                                 item={item}
+                                newReviewList={newReviewList}
+                                setNewReviewList={setNewReviewList}
                             ></ItemReviewDropdown>
                         );
                     })
@@ -57,6 +78,13 @@ export default function ReviewPage({
                         width: "50%",
                         backgroundColor: "green",
                     }}
+                    disabled={isUploadingReviews}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setIsUploadingReviews(true);
+                        addReviewsHandler();
+                    }}
+                    type="submit"
                 >
                     Submit Review
                 </button>

@@ -8,6 +8,7 @@ import {
     doc,
     where,
     query,
+    writeBatch,
 } from "firebase/firestore";
 import { firestore, storage } from "../components/firebaseConfig";
 import bcrypt from "bcryptjs-react";
@@ -318,7 +319,30 @@ const useDB = () => {
         }
     };
 
-    const addReviews = async ({ reviewsArray }: AddReviewParams) => {};
+    const addReviews = async ({
+        reviewsArray,
+    }: AddReviewParams): Promise<ResponseObject> => {
+        try {
+            if (reviewsArray.length < 1) throw "No reviews provided";
+
+            const batch = writeBatch(firestore);
+            const collectionRef = collection(firestore, "reviews");
+
+            reviewsArray.forEach((review) => {
+                const docRef = doc(collectionRef);
+                batch.set(docRef, review);
+            });
+
+            await batch.commit();
+            return { status: 200, body: "Success" };
+        } catch (e) {
+            console.error(e);
+            return {
+                status: 400,
+                body: e + "",
+            };
+        }
+    };
 
     return {
         addStore,
@@ -329,6 +353,7 @@ const useDB = () => {
         loginUser,
         addItem,
         getItemsByStore,
+        addReviews,
     };
 };
 
