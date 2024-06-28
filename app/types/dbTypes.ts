@@ -35,7 +35,7 @@ export interface GetItemsByStoreParams {
 
 interface BaseReview {
     reviewId: string;
-    userId: string;
+    userId?: string;
     img?: string;
     rating: number;
     comments?: string;
@@ -49,11 +49,19 @@ interface ItemReview extends BaseReview {
     itemId: string;
 }
 
-export interface NewReview {
+export interface NewItemReview {
     itemId: string;
     rating: number;
     comments: string;
 }
+
+interface NewStoreReview {
+    storeId: string;
+    rating: number;
+    comments: string;
+}
+
+export type NewReview = NewStoreReview | NewItemReview;
 
 export type Tag = {
     tagId: string;
@@ -114,4 +122,8 @@ export interface AddItemResponse extends ResponseObject {
 
 export interface ItemListResponse extends ResponseObject {
     body: Item[] | string;
+}
+
+export interface ReviewListResponse extends ResponseObject {
+    body: Review[] | string;
 }

@@ -23,6 +23,8 @@ import {
     ItemListResponse,
     LoginUserParams,
     ResponseObject,
+    Review,
+    ReviewListResponse,
     Store,
     StoreListResponseObject,
     StoreResponseObject,
@@ -42,7 +44,6 @@ const useDB = () => {
         const userRef = collection(firestore, "users");
         const q = query(userRef, where("email", "==", email));
         const querySnapshot = await getDocs(q);
-        console.log("queruSnapshot", querySnapshot);
         return querySnapshot.size > 0;
     };
 
@@ -287,6 +288,29 @@ const useDB = () => {
         }
     };
 
+    const getItems = async (): Promise<ItemListResponse> => {
+        try {
+            const querySnapshot = await getDocs(collection(firestore, "items"));
+            let itemList: Item[] = [];
+            querySnapshot.forEach((item) => {
+                const data = item.data();
+                itemList.push({
+                    itemId: item.id,
+                    itemName: data.itemName,
+                    storeId: data.storeId,
+                    ...(data.tags ? { tags: data.tags } : {}),
+                });
+            });
+            return { status: 200, body: itemList };
+        } catch (e) {
+            console.error(e);
+            return {
+                status: 400,
+                body: e + "",
+            };
+        }
+    };
+
     const getItemsByStore = async ({
         storeId,
     }: GetItemsByStoreParams): Promise<ItemListResponse> => {
@@ -344,6 +368,36 @@ const useDB = () => {
         }
     };
 
+    const getReviews = async (): Promise<ReviewListResponse> => {
+        try {
+            const querySnapshot = await getDocs(
+                collection(firestore, "reviews")
+            );
+            let reviewList: Review[] = [];
+            querySnapshot.docs.forEach((review) => {
+                const data = review.data();
+                reviewList.push({
+                    reviewId: review.id,
+                    storeId: data.storeId,
+                    rating: data.rating,
+                    comments: data.comments,
+                    ...(data.userId ? { userId: data.userId } : {}),
+                    ...(data.storeId ? { storeId: data.storeId } : {}),
+                    ...(data.itemId ? { itemId: data.itemId } : {}),
+                });
+            });
+            return {
+                status: 200,
+                body: reviewList,
+            };
+        } catch (e) {
+            return {
+                status: 400,
+                body: e + "",
+            };
+        }
+    };
+
     return {
         addStore,
         getStores,
@@ -352,8 +406,10 @@ const useDB = () => {
         addUser,
         loginUser,
         addItem,
+        getItems,
         getItemsByStore,
         addReviews,
+        getReviews,
     };
 };
 

@@ -1,12 +1,12 @@
-import { Item, NewReview } from "@/app/types/dbTypes";
+import { Item, NewItemReview } from "@/app/types/dbTypes";
 import React, { useEffect, useState } from "react";
 import ItemReviewDropdown from "./itemReviewDropdown";
 
 interface ReviewPageParams {
     selectedItems: Item[];
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-    newReviewList: NewReview[];
-    setNewReviewList: React.Dispatch<React.SetStateAction<NewReview[]>>;
+    newReviewList: NewItemReview[];
+    setNewReviewList: React.Dispatch<React.SetStateAction<NewItemReview[]>>;
     isUploadingReviews: boolean;
     setIsUploadingReviews: React.Dispatch<React.SetStateAction<boolean>>;
     addReviewsHandler: () => Promise<void>;

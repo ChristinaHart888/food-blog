@@ -1,13 +1,13 @@
 "use client";
-import { Item, NewReview } from "@/app/types/dbTypes";
+import { Item, NewItemReview } from "@/app/types/dbTypes";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import dropdown from "./dropdown-arrow.png";
 
 interface ItemReviewDropdownParams {
     item: Item;
-    newReviewList: NewReview[];
-    setNewReviewList: React.Dispatch<React.SetStateAction<NewReview[]>>;
+    newReviewList: NewItemReview[];
+    setNewReviewList: React.Dispatch<React.SetStateAction<NewItemReview[]>>;
 }
 
 export default function ItemReviewDropdown({
@@ -20,11 +20,6 @@ export default function ItemReviewDropdown({
     const [newComments, setNewComments] = useState<string>("");
 
     useEffect(() => {
-        console.log("NewReviews");
-        console.log(newReviewList);
-    }, [newReviewList]);
-
-    useEffect(() => {
         //Check if newReviewList already has item
         const index = newReviewList.findIndex(
             (newReview) => newReview.itemId === item.itemId
@@ -33,12 +28,11 @@ export default function ItemReviewDropdown({
         //If newReviewList has item
         if (index !== -1) {
             //Update newReviewList
-            console.log("Item alr exists", item.itemName);
             setNewReviewList((prevList) =>
                 prevList.map((newReview) =>
                     newReview.itemId === item.itemId
                         ? {
-                              itemId: item.itemId,
+                              ...newReview,
                               rating: newRating,
                               comments: newComments,
                           }
@@ -47,13 +41,14 @@ export default function ItemReviewDropdown({
             );
         } else {
             //Add item to newReviewList
-            console.log("Adding item", item.itemName);
+            const userId = localStorage.getItem("userId");
             setNewReviewList((prev) => [
                 ...prev,
                 {
                     itemId: item.itemId,
                     rating: newRating,
                     comments: newComments,
+                    userId: userId,
                 },
             ]);
         }

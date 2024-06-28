@@ -4,7 +4,13 @@ import Card from "@/app/components/card";
 import Popup from "@/app/components/popup";
 import TextInput from "@/app/components/TextInput";
 import useDB from "@/app/hooks/useDB";
-import { Item, NewReview, Review, Store } from "@/app/types/dbTypes";
+import {
+    Item,
+    NewItemReview,
+    NewReview,
+    Review,
+    Store,
+} from "@/app/types/dbTypes";
 import { DocumentData } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
@@ -19,7 +25,7 @@ export default function Form() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [newReviewList, setNewReviewList] = useState<NewReview[]>([]);
+    const [newReviewList, setNewReviewList] = useState<NewItemReview[]>([]);
     const [isUploadingReviews, setIsUploadingReviews] =
         useState<boolean>(false);
 
