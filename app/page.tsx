@@ -22,13 +22,16 @@ export default function Home() {
                     link="/reviews"
                     background="/images/jb-mj.jpg"
                 ></Card>
-                <Card title="Stores" link="/stores" background=""></Card>
                 <Card
                     title="Add Review"
                     link="/reviews/new"
                     background=""
                 ></Card>
+                <Card title="Stores" link="/stores" background=""></Card>
+
                 <Card title="Add Store" link="/stores/new" background=""></Card>
+                <Card title="Tags" link="/tags" background=""></Card>
+                <Card title="Add Tags" link="/tags/new" background=""></Card>
             </div>
         </main>
     );

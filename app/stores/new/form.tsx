@@ -3,16 +3,21 @@
 import React, { useEffect, useState } from "react";
 import useDB from "../../hooks/useDB";
 import { Store } from "@/app/types/dbTypes";
+import Popup from "@/app/components/popup";
 
 export default function Form() {
-    const [isGroup, setIsGroup] = useState(false);
+    const [isGroup, setIsGroup] = useState<boolean>(false);
     const [file, setFile] = useState(null);
-    const [storeName, setStoreName] = useState("");
-    const [groupId, setGroupId] = useState("");
+    const [storeName, setStoreName] = useState<string>("");
+    const [searchGroupName, setSearchGroupName] = useState<string>("");
+    const [selectedGroup, setSelectedGroup] = useState<
+        Store | null | undefined
+    >(undefined);
     //TODO: Fix the probelm with the button not being disabled when isLoading is true
     const [isLoading, setIsLoading] = useState<boolean>(false);
     //TODO: Set store interface
     const [storeGroup, setStoreGroup] = useState<Store[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const { addStore, getStoreGroup } = useDB();
 
@@ -24,6 +29,7 @@ export default function Form() {
                 setStoreGroup(res.body);
             } else {
                 console.error(res.body);
+                setErrorMessage(res.body + "");
             }
         };
         initRoom();
@@ -34,26 +40,26 @@ export default function Form() {
     };
 
     const handleAddStore = async () => {
-        console.log("Adding store");
         setIsLoading(true);
         const result = await addStore({
             storeName,
             isGroup,
             file,
-            groupId,
+            groupId: selectedGroup ? selectedGroup?.storeId : null,
         });
         if (result?.status === 200) {
             console.log("Done", result.body);
             setIsLoading(false);
-            alert("New store added");
+            window.location.reload();
         } else {
             console.error(result?.body);
+            setErrorMessage(result?.body + "");
+            setIsLoading(false);
         }
     };
 
     return (
         <form
-            action={handleAddStore}
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -74,6 +80,9 @@ export default function Form() {
                     className="store-name"
                     onChange={(e) => setStoreName(e.target.value)}
                     value={storeName}
+                    style={{
+                        padding: "1em 0.5em",
+                    }}
                 />
             </div>
             <div
@@ -84,12 +93,33 @@ export default function Form() {
                 }}
             >
                 <label htmlFor="group-selector">Type of store</label>
-                <div
-                    className="group-selector"
-                    onClick={() => setIsGroup((curr) => !curr)}
-                    style={{ cursor: "pointer", border: "1px solid white" }}
-                >
-                    {isGroup ? "Group" : "Individual"}
+                <div className="group-selector" style={{ display: "flex" }}>
+                    <div
+                        onClick={() => setIsGroup(true)}
+                        style={{
+                            cursor: "pointer",
+                            border: "1px solid white",
+                            padding: "1em",
+                            width: "50%",
+                            textAlign: "center",
+                            backgroundColor: isGroup ? "green" : "#222",
+                        }}
+                    >
+                        Group
+                    </div>
+                    <div
+                        onClick={() => setIsGroup(false)}
+                        style={{
+                            cursor: "pointer",
+                            border: "1px solid white",
+                            padding: "1em",
+                            width: "50%",
+                            textAlign: "center",
+                            backgroundColor: !isGroup ? "green" : "#222",
+                        }}
+                    >
+                        Individual
+                    </div>
                 </div>
             </div>
             {!isGroup && (
@@ -101,18 +131,111 @@ export default function Form() {
                     }}
                 >
                     <label htmlFor="group">What group is it in?</label>
-                    <input id="group" list="groups" defaultValue="No Group" />
-                    <datalist id="groups">
+                    {selectedGroup !== undefined ? (
+                        <div
+                            style={{
+                                border: "1px solid white",
+                                padding: "1em 0.5em",
+                                display: "flex",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <span>
+                                {selectedGroup === null
+                                    ? "No Group"
+                                    : selectedGroup.storeName}
+                            </span>
+                            <div
+                                className="div"
+                                onClick={() => setSelectedGroup(undefined)}
+                                style={{
+                                    cursor: "pointer",
+                                }}
+                            >
+                                X
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <input
+                                id="group"
+                                type="text"
+                                style={{
+                                    padding: "1em 0.5em",
+                                }}
+                                value={searchGroupName}
+                                onChange={(e) =>
+                                    setSearchGroupName(e.target.value)
+                                }
+                            />
+                            <div
+                                className="groupList"
+                                style={{
+                                    maxHeight: "20em",
+                                    overflow: "scroll",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: "1em 0.5em",
+                                        borderBottom: "1px solid black",
+                                        backgroundColor: "#444",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                        setSelectedGroup(null);
+                                        setSearchGroupName("No Group");
+                                    }}
+                                >
+                                    No Group
+                                </div>
+                                {storeGroup.length > 0 &&
+                                    storeGroup.map((store) => {
+                                        const showStore =
+                                            searchGroupName.length === 0 ||
+                                            (searchGroupName.length > 0 &&
+                                                store.storeName
+                                                    .toUpperCase()
+                                                    .includes(
+                                                        searchGroupName.toUpperCase()
+                                                    ));
+                                        return (
+                                            <div
+                                                style={{
+                                                    padding: "1em 0.5em",
+                                                    borderBottom:
+                                                        "1px solid black",
+                                                    backgroundColor: "#444",
+                                                    display: showStore
+                                                        ? "block"
+                                                        : "none",
+                                                    cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                    setSelectedGroup(store);
+                                                }}
+                                            >
+                                                {store.storeName}
+                                            </div>
+                                        );
+                                    })}
+                            </div>{" "}
+                        </>
+                    )}
+                    {/* <datalist id="groups">
                         <option value="0">No Group</option>
                         {storeGroup.length > 0 &&
-                            storeGroup.map((store: any) => {
+                            storeGroup.map((store) => {
                                 return (
-                                    <option key={store.id} value={store.id}>
-                                        {store.data().storeName}
+                                    <option
+                                        key={store.storeId}
+                                        value={store.storeName}
+                                    >
+                                        {store.storeName}
                                     </option>
                                 );
                             })}
-                    </datalist>
+                    </datalist> */}
                 </div>
             )}
             <div
@@ -135,10 +258,22 @@ export default function Form() {
                 <button
                     type="submit"
                     disabled={isLoading}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", padding: "1em 0.5em" }}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setIsLoading(true);
+                        handleAddStore();
+                    }}
                 >
                     Create Store
                 </button>
+            )}
+            {errorMessage && (
+                <Popup
+                    errorMessage={errorMessage}
+                    setErrorMessage={setErrorMessage}
+                    timeout={5000}
+                ></Popup>
             )}
         </form>
     );

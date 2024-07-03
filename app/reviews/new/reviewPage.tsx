@@ -1,6 +1,7 @@
 import { Item, NewItemReview } from "@/app/types/dbTypes";
 import React, { useEffect, useState } from "react";
 import ItemReviewDropdown from "./itemReviewDropdown";
+import { useRouter } from "next/navigation";
 
 interface ReviewPageParams {
     selectedItems: Item[];
@@ -21,15 +22,21 @@ export default function ReviewPage({
     setIsUploadingReviews,
     addReviewsHandler,
 }: ReviewPageParams) {
+    const router = useRouter();
     useEffect(() => {
-        setNewReviewList(
-            selectedItems.map((item) => ({
-                itemId: item.itemId,
-                rating: 5,
-                comments: "",
-            }))
-        );
+        const userId = localStorage.getItem("userId");
+        userId
+            ? setNewReviewList(
+                  selectedItems.map((item) => ({
+                      itemId: item.itemId,
+                      rating: 5,
+                      comments: "",
+                      userId: userId,
+                  }))
+              )
+            : router.push("/login");
     }, []);
+
     return (
         <div
             style={{

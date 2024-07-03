@@ -29,6 +29,12 @@ export interface AddItemParams {
     img?: File;
 }
 
+export interface AddTagParams {
+    tagName: string;
+    tagColor?: string;
+    userId: string;
+}
+
 export interface GetItemsByStoreParams {
     storeId: string;
 }
@@ -49,16 +55,20 @@ interface ItemReview extends BaseReview {
     itemId: string;
 }
 
-export interface NewItemReview {
-    itemId: string;
+interface NewBaseReview {
     rating: number;
     comments: string;
+    userId: string;
 }
 
-interface NewStoreReview {
+export interface NewItemReview extends NewBaseReview {
+    itemId: string;
+    storeId?: never;
+}
+
+interface NewStoreReview extends NewBaseReview {
     storeId: string;
-    rating: number;
-    comments: string;
+    itemId?: never;
 }
 
 export type NewReview = NewStoreReview | NewItemReview;
@@ -66,6 +76,8 @@ export type NewReview = NewStoreReview | NewItemReview;
 export type Tag = {
     tagId: string;
     tagName: string;
+    tagColor?: string;
+    userId: string;
 };
 
 export type Review = StoreReview | ItemReview;
@@ -126,4 +138,12 @@ export interface ItemListResponse extends ResponseObject {
 
 export interface ReviewListResponse extends ResponseObject {
     body: Review[] | string;
+}
+
+export interface TagResponse extends ResponseObject {
+    body: Tag | string;
+}
+
+export interface TagListResponse extends ResponseObject {
+    body: Tag[] | string;
 }

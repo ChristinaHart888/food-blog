@@ -17,6 +17,7 @@ import {
     AddItemResponse,
     AddReviewParams,
     AddStoreParams,
+    AddTagParams,
     AddUserParams,
     GetItemsByStoreParams,
     Item,
@@ -28,6 +29,8 @@ import {
     Store,
     StoreListResponseObject,
     StoreResponseObject,
+    TagListResponse,
+    TagResponse,
     UserResponseObject,
 } from "../types/dbTypes";
 //import jwt from 'jsonwebtoken'
@@ -66,7 +69,8 @@ const useDB = () => {
         groupId = null,
     }: AddStoreParams) => {
         try {
-            if (!storeName || !isGroup) throw "Missing Store Info";
+            if (!storeName || (isGroup !== true && isGroup !== false))
+                throw "Missing Store Info";
             let url = null;
             if (file) {
                 console.log("File name", file.name);
@@ -86,6 +90,7 @@ const useDB = () => {
                 return { status: 200, body: newStore.id };
             }
         } catch (e) {
+            console.log("storeName", storeName);
             return { status: 400, body: e + "" };
         }
     };
@@ -398,6 +403,40 @@ const useDB = () => {
         }
     };
 
+    const addTags = async ({
+        tagName,
+        tagColor,
+        userId,
+    }: AddTagParams): Promise<TagResponse> => {
+        try {
+            const collectionRef = collection(firestore, "tags");
+            const res = await addDoc(collectionRef, {
+                tagName,
+                tagColor,
+                userId,
+            });
+            if (res.id) {
+                return {
+                    status: 200,
+                    body: {
+                        tagId: res.id,
+                        tagName,
+                        tagColor,
+                        userId,
+                    },
+                };
+            } else {
+                throw "Error occured when creating Tag";
+            }
+        } catch (e) {
+            console.error(e);
+            return {
+                status: 400,
+                body: e + "",
+            };
+        }
+    };
+
     return {
         addStore,
         getStores,
@@ -410,6 +449,7 @@ const useDB = () => {
         getItemsByStore,
         addReviews,
         getReviews,
+        addTags,
     };
 };
 

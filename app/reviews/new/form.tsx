@@ -29,7 +29,7 @@ export default function Form() {
     const [isUploadingReviews, setIsUploadingReviews] =
         useState<boolean>(false);
 
-    const { getStores, addItem, getItemsByStore, addReviews } = useDB();
+    const { getStores, addReviews } = useDB();
 
     useEffect(() => {
         const initRoom = async () => {

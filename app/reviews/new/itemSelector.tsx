@@ -131,30 +131,25 @@ export default function ItemSelector({
                                             storeSearchTerm.toUpperCase()
                                         ));
                             return (
-                                <>
-                                    {showStore ? (
-                                        <div
-                                            key={index}
-                                            onClick={() => {
-                                                // console.log(
-                                                //     store.data(),
-                                                //     store.id
-                                                // );
-                                                setSelectedStore(store);
-                                            }}
-                                            style={{
-                                                width: "100%",
-                                                border: "1px solid white",
-                                                padding: "0.5em 1em",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            {store.storeName}
-                                        </div>
-                                    ) : (
-                                        <></>
-                                    )}
-                                </>
+                                <div
+                                    key={index}
+                                    onClick={() => {
+                                        // console.log(
+                                        //     store.data(),
+                                        //     store.id
+                                        // );
+                                        setSelectedStore(store);
+                                    }}
+                                    style={{
+                                        width: "100%",
+                                        border: "1px solid white",
+                                        padding: "0.5em 1em",
+                                        cursor: "pointer",
+                                        display: showStore ? "block" : "none",
+                                    }}
+                                >
+                                    {store.storeName}
+                                </div>
                             );
                         })}
                     </div>

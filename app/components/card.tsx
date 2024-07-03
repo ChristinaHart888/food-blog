@@ -49,6 +49,7 @@ export default function Card({ title, background, link, onClick }: CardParams) {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
                     }}
                 >
                     <span style={{ fontSize: "32px", textAlign: "center" }}>
