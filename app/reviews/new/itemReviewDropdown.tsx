@@ -42,15 +42,17 @@ export default function ItemReviewDropdown({
         } else {
             //Add item to newReviewList
             const userId = localStorage.getItem("userId");
-            setNewReviewList((prev) => [
-                ...prev,
-                {
-                    itemId: item.itemId,
-                    rating: newRating,
-                    comments: newComments,
-                    userId: userId,
-                },
-            ]);
+            if (userId) {
+                setNewReviewList((prev) => [
+                    ...prev,
+                    {
+                        itemId: item.itemId,
+                        rating: newRating,
+                        comments: newComments,
+                        userId: userId,
+                    },
+                ]);
+            }
         }
     }, [newRating, newComments]);
 

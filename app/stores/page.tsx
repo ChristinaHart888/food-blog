@@ -41,7 +41,6 @@ export default function Page() {
             >
                 {storeList.length > 0 ? (
                     storeList.map((store, index) => {
-                        console.log(store);
                         return (
                             <Card
                                 title={store.storeName}

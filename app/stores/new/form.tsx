@@ -214,6 +214,7 @@ export default function Form() {
                                                 onClick={() => {
                                                     setSelectedGroup(store);
                                                 }}
+                                                key={store.storeId}
                                             >
                                                 {store.storeName}
                                             </div>
@@ -222,20 +223,6 @@ export default function Form() {
                             </div>{" "}
                         </>
                     )}
-                    {/* <datalist id="groups">
-                        <option value="0">No Group</option>
-                        {storeGroup.length > 0 &&
-                            storeGroup.map((store) => {
-                                return (
-                                    <option
-                                        key={store.storeId}
-                                        value={store.storeName}
-                                    >
-                                        {store.storeName}
-                                    </option>
-                                );
-                            })}
-                    </datalist> */}
                 </div>
             )}
             <div

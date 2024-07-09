@@ -19,7 +19,7 @@ export default function Content() {
     return (
         <div>
             {tags.map((tag) => (
-                <div>{tag.tagName}</div>
+                <div key={tag.tagId}>{tag.tagName}</div>
             ))}
         </div>
     );

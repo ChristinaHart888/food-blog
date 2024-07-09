@@ -99,6 +99,7 @@ export default function Form() {
                                     ? "3px solid lime"
                                     : "none",
                         }}
+                        key={color}
                         onClick={() => setSelectedColor(color)}
                     ></div>
                 ))}
