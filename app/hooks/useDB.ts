@@ -29,6 +29,7 @@ import {
     Store,
     StoreListResponseObject,
     StoreResponseObject,
+    Tag,
     TagListResponse,
     TagResponse,
     UserResponseObject,
@@ -403,7 +404,7 @@ const useDB = () => {
         }
     };
 
-    const addTags = async ({
+    const addTag = async ({
         tagName,
         tagColor,
         userId,
@@ -437,6 +438,31 @@ const useDB = () => {
         }
     };
 
+    const getTags = async (): Promise<TagListResponse> => {
+        try {
+            const querySnapshot = await getDocs(collection(firestore, "tags"));
+            let tagList: Tag[] = [];
+            querySnapshot.docs.forEach((tag) => {
+                const data = tag.data();
+                tagList.push({
+                    tagId: tag.id,
+                    tagName: data.tagName,
+                    tagColor: data.tagColor,
+                    userId: data.userId,
+                });
+            });
+            return {
+                status: 200,
+                body: tagList,
+            };
+        } catch (e) {
+            return {
+                status: 400,
+                body: e + "",
+            };
+        }
+    };
+
     return {
         addStore,
         getStores,
@@ -449,7 +475,8 @@ const useDB = () => {
         getItemsByStore,
         addReviews,
         getReviews,
-        addTags,
+        addTag,
+        getTags,
     };
 };
 
